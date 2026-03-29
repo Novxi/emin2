@@ -1,0 +1,81 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Süper Admin",
+      "email": "106077az@gmail.com",
+      "password": "$2b$10$VyhThq8V9jmEAKlb5/aHju0NuAMZNOEeC5h4p/AwcNKtsBOJJk0LC",
+      "role": "admin",
+      "permissions": [
+        "overview",
+        "customers",
+        "quotes",
+        "payments",
+        "support",
+        "gallery",
+        "services",
+        "testimonials",
+        "admins",
+        "settings",
+        "purchased-services",
+        "refunds",
+        "purchasable-services"
+      ]
+    }
+  ],
+  "employees": [],
+  "settings": {
+    "maintenanceMode": false,
+    "siteTitle": "Emin Bilgi İşlem",
+    "slogan": "Teknolojide Güvenilir Çözüm Ortağınız",
+    "description": "Emin Bilgi İşlem, kurumsal ve bireysel teknoloji ihtiyaçlarınız için profesyonel çözümler sunar.",
+    "email": "info@eminbilgiislem.com",
+    "phone": "+90 (555) 000 00 00",
+    "address": "Teknoloji Mah. Bilişim Sok. No:1, İstanbul",
+    "warrantyFee1Year": 1499,
+    "warrantyFee2Year": 2499,
+    "warrantyFee3Year": 3299,
+    "membershipFee": 150,
+    "aiCameraMonthlyFee": 250,
+    "packages": [
+      {
+        "id": "silver",
+        "name": "Silver Paket",
+        "price": 999,
+        "features": [
+          "Temel Teknik Destek",
+          "Yıllık 1 Bakım",
+          "Uzaktan Yardım",
+          "E-posta Desteği"
+        ]
+      },
+      {
+        "id": "gold",
+        "name": "Gold Paket",
+        "price": 1999,
+        "features": [
+          "7/24 Teknik Destek",
+          "Yıllık 2 Bakım",
+          "Öncelikli Servis",
+          "Veri Yedekleme Çözümü"
+        ]
+      },
+      {
+        "id": "platinum",
+        "name": "Platinum Paket",
+        "price": 3999,
+        "features": [
+          "VIP Teknik Destek",
+          "Sınırsız Bakım",
+          "Yerinde Servis",
+          "Siber Güvenlik Paketi",
+          "Sınırsız Bulut Depolama"
+        ]
+      }
+    ]
+  },
+  "quotes": [],
+  "purchasableServices": [],
+  "purchasedServices": [],
+  "refundRequests": []
+}

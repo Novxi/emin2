@@ -1,0 +1,76 @@
+{
+  "entities": {
+    "Ticket": {
+      "title": "Support Ticket",
+      "description": "A support ticket created by a customer.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "customerId": { "type": "string" },
+        "customerName": { "type": "string" },
+        "customerEmail": { "type": "string" },
+        "customerFirebaseUid": { "type": "string" },
+        "subject": { "type": "string" },
+        "status": { "type": "string", "enum": ["open", "closed", "pending"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["customerId", "customerName", "customerEmail", "customerFirebaseUid", "subject", "status", "createdAt", "updatedAt"]
+    },
+    "Message": {
+      "title": "Chat Message",
+      "description": "A message within a support ticket.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "senderId": { "type": "string" },
+        "senderName": { "type": "string" },
+        "senderRole": { "type": "string", "enum": ["user", "admin"] },
+        "text": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["senderId", "senderRole", "text", "createdAt"]
+    },
+    "Admin": {
+      "title": "Admin",
+      "description": "An elevated admin session.",
+      "type": "object",
+      "properties": {
+        "elevatedAt": { "type": "string", "format": "date-time" },
+        "siteEmail": { "type": "string" },
+        "name": { "type": "string" }
+      },
+      "required": ["elevatedAt", "siteEmail", "name"]
+    },
+    "User": {
+      "title": "User Profile",
+      "description": "User role and customer association.",
+      "type": "object",
+      "properties": {
+        "role": { "type": "string", "enum": ["user", "admin", "Çalışan"] },
+        "customerId": { "type": "string" },
+        "email": { "type": "string" },
+        "name": { "type": "string" }
+      },
+      "required": ["role", "email"]
+    }
+  },
+  "firestore": {
+    "/tickets": {
+      "schema": "Ticket",
+      "description": "Collection of support tickets."
+    },
+    "/tickets/{ticketId}/messages": {
+      "schema": "Message",
+      "description": "Subcollection of messages for a specific ticket."
+    },
+    "/admins": {
+      "schema": "Admin",
+      "description": "Collection of elevated admin UIDs."
+    },
+    "/users": {
+      "schema": "User",
+      "description": "Collection of user profiles for security rules."
+    }
+  }
+}

@@ -1,0 +1,99 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+        (request.auth.token.email == "106077az@gmail.com" || 
+         exists(/databases/$(database)/documents/admins/$(request.auth.uid)));
+    }
+
+    function isTicketOwner(ticketData) {
+      return isAuthenticated() && (
+        request.auth.uid == ticketData.customerFirebaseUid || 
+        (request.auth.token.email != null && request.auth.token.email == ticketData.customerEmail) ||
+        isEmployeeOf(ticketData.customerId)
+      );
+    }
+
+    function isEmployeeOf(customerId) {
+      return isAuthenticated() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'Çalışan' &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.customerId == String(customerId);
+    }
+
+    function isValidTicket(data) {
+      return data.keys().hasAll(['customerId', 'customerName', 'customerEmail', 'customerFirebaseUid', 'subject', 'status', 'createdAt', 'updatedAt']) &&
+             (data.customerId is string || data.customerId is number) &&
+             data.customerName is string &&
+             data.customerEmail is string &&
+             data.customerFirebaseUid is string &&
+             data.subject is string && data.subject.size() > 0 && data.subject.size() < 200 &&
+             data.status in ['open', 'closed', 'pending'] &&
+             data.createdAt is timestamp &&
+             data.updatedAt is timestamp;
+    }
+
+    function isValidMessage(data) {
+      return data.keys().hasAll(['senderId', 'senderName', 'senderRole', 'text', 'createdAt']) &&
+             data.senderId is string &&
+             data.senderName is string &&
+             data.senderRole in ['user', 'admin'] &&
+             data.text is string && data.text.size() > 0 && data.text.size() < 2000 &&
+             data.createdAt is timestamp;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /admins/{adminId} {
+      // Allow the master admin to elevate any UID
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && 
+                   (request.auth.token.email == "106077az@gmail.com" || 
+                    (request.resource.data.siteEmail == "106077az@gmail.com" && request.auth.uid == adminId));
+    }
+
+    match /tickets/{ticketId} {
+      // Customers can read their own tickets, admins can read all
+      allow read: if isAuthenticated() && (isTicketOwner(resource.data) || isAdmin());
+      
+      // Customers can create tickets for themselves
+      allow create: if isAuthenticated() && 
+                    request.resource.data.customerFirebaseUid == request.auth.uid &&
+                    isValidTicket(request.resource.data);
+      
+      // Admins can update any ticket, customers can update their own
+      allow update: if isAuthenticated() && 
+                    (isAdmin() || (isTicketOwner(resource.data) && request.resource.data.customerFirebaseUid == resource.data.customerFirebaseUid)) &&
+                    isValidTicket(request.resource.data);
+      
+      allow delete: if isAdmin();
+
+      match /messages/{messageId} {
+        // Customers can read messages in their own tickets, admins can read all
+        allow read: if isAuthenticated() && (isTicketOwner(get(/databases/$(database)/documents/tickets/$(ticketId)).data) || isAdmin());
+        
+        // Both can create messages in a ticket they have access to
+        allow create: if isAuthenticated() && 
+                      (isTicketOwner(get(/databases/$(database)/documents/tickets/$(ticketId)).data) || isAdmin()) &&
+                      isValidMessage(request.resource.data);
+        
+        allow update, delete: if isAdmin();
+      }
+    }
+
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      allow write: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+    }
+  }
+}
