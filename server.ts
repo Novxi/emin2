@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
 import fs from "fs";
-import { galleryItems as initialGalleryItems } from "./lib/galleryData";
+import { galleryItems as initialGalleryItems } from "./lib/galleryData.js";
 import { services as initialServices } from "./lib/servicesData.js";
 
 const __filename = fileURLToPath(import.meta.url);
